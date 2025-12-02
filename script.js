@@ -27,63 +27,69 @@ function createChessBoard() {
     return chessBoardDiv.children;
 }
 
-//Function to set the starting pieces on the board. They are just svg files. 
-function setStartingPositionPieces(){
-    //Calling the createChessBoard() function to display blank board. 
-    const chessBoardNodeListSquares = createChessBoard();
-    
-    //Section is self explanatory. I loop through these objects/ arrays and append image elements into the child elements of the board.
-    const firstBlackRow = {
-        0: `./pieces/bR.svg`,
-        1: `./pieces/bN.svg`,
-        2: `./pieces/bB.svg`,
-        3: `./pieces/bQ.svg`,
-        4: `./pieces/bK.svg`,
-        5: `./pieces/bB.svg`,
-        6: `./pieces/bN.svg`,
-        7: `./pieces/bR.svg`,
-    };
+function boardDataStructure(){
+    //Create data structure, return board
+    const boardDataStructure = [
+        [`bR`, `bN`, `bB`, `bQ`, `bK`, `bB`, `bN`, `bR`],
+        [`bP`, `bP`, `bP`, `bP`, `bP`, `bP`, `bP`, `bP`],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [`wP`, `wP`, `wP`, `wP`, `wP`, `wP`, `wP`, `wP`],
+        [`wR`, `wN`, `wB`, `wQ`, `wK`, `wB`, `wN`, `wR`],
+    ];
 
-    //These are just arrays because every index is going to have the same pawn image.
-    const blackPawnRow = [8,9,10,11,12,13,14,15];
-    
-    const firstWhiteRow = {
-        56: `./pieces/wR.svg`,
-        57: `./pieces/wN.svg`,
-        58: `./pieces/wB.svg`,
-        59: `./pieces/wQ.svg`,
-        60: `./pieces/wK.svg`,
-        61: `./pieces/wB.svg`,
-        62: `./pieces/wN.svg`,
-        63: `./pieces/wR.svg`,
-    };
-
-    const whitePawnRow = [48,49,50,51,52,53,54,55];
-
-    for (let key in firstBlackRow){
-        const img = document.createElement(`img`);
-        img.src = firstBlackRow[key];
-        chessBoardNodeListSquares[key].appendChild(img);
-    };
-
-    blackPawnRow.forEach(function(index){
-        const img = document.createElement(`img`);
-        img.src = `./pieces/bP.svg`;
-        chessBoardNodeListSquares[index].appendChild(img);
-    });
-
-    for (let key in firstWhiteRow){
-        const img = document.createElement(`img`);
-        img.src = firstWhiteRow[key];
-        chessBoardNodeListSquares[key].appendChild(img);
-    };
-
-    whitePawnRow.forEach(function(index){
-        const img = document.createElement(`img`);
-        img.src = `./pieces/wP.svg`;
-        chessBoardNodeListSquares[index].appendChild(img);
-    });
+    return boardDataStructure;
 
 }
 
-setStartingPositionPieces();
+
+function renderPosition(currentBoard, nodeListOfSquares){
+
+    //Render position pieces into the DOM
+
+    //nodelist number 10 is 1st row, 2nd col. but on this array, its 1,1 i think. 
+    //So i think to get it matched, its 1(row) * 8 so 8, then + col. 8+2 =10.
+    //So 11 would be (1 * 8) + 3 = 11.
+    
+    for (let row = 0; row < 8; row++){
+        for (let col = 0; col < 8; col++){
+            //convert [row][col] to nodeList number
+            const indexNumber = (row * 8) + col;
+            //get specific square <div>, connects DOM single number with [row][col]
+            const square = nodeListOfSquares[indexNumber]; //takes in nodelist 0-63. so nodelist[10] or something.
+            square.innerHTML = ''; //clear html
+
+            const piece = currentBoard[row][col];
+
+            if (piece === null){
+                continue;
+            }
+
+
+            const img = document.createElement(`img`);
+            img.src = `./pieces/${currentBoard[row][col]}.svg`;
+            //DOM does not know about data structure, so we need to find correct div that matches [row][col]
+            //So square = 9, is actually [1][1]. right cause (1 * 8) + 1 = 9.
+            square.appendChild(img);
+        }
+    }
+}
+
+function movePiece(currentBoard,row, col){
+    //Given current board, move this piece, needs to loop or something
+    const currentPiece = currentBoard[row][col];
+    currentBoard[row][col] = null;
+    currentBoard[row + 1][col] = currentPiece;
+
+}
+
+
+const nodeListOfSquares = createChessBoard();
+const currentBoard = boardDataStructure();
+renderPosition(currentBoard, nodeListOfSquares);
+console.log(currentBoard);
+// movePiece(currentBoard, 1, 0);
+// console.log(currentBoard);
+// renderPosition(currentBoard, nodeListOfSquares);
