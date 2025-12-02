@@ -77,11 +77,44 @@ function renderPosition(currentBoard, nodeListOfSquares){
     }
 }
 
-function movePiece(currentBoard,row, col){
-    //Given current board, move this piece, needs to loop or something
-    const currentPiece = currentBoard[row][col];
-    currentBoard[row][col] = null;
-    currentBoard[row + 1][col] = currentPiece;
+// function movePiece(currentBoard,row, col){
+//     //Given current board, move this piece, needs to loop or something
+//     const currentPiece = currentBoard[row][col];
+//     currentBoard[row][col] = null;
+//     currentBoard[row + 1][col] = currentPiece;
+
+// }
+
+function movePieceTest(currentBoard, nodeListOfSquares){
+    //Piece is 'clicked' on the DOM, needs to relate to datastructure, add click event to move
+    for (let row = 0; row < 8; row++){
+        for(let col = 0; col < 8; col ++){
+            //Connects grid to DOM
+            const indexNumber = (row * 8) + col; //gives matching index in DOM to rows and cols
+            const square = nodeListOfSquares[indexNumber]; //where that index in the DOM actually is
+
+
+            square.addEventListener(`click`, function(){
+                //Adding this listener to every square
+                //Listener attached to square[9] knows its row 1, col 1, etc.
+
+                const currentPiece = currentBoard[row][col];
+
+                if (currentPiece === null){
+                    //When i click again, currentPlace should be null
+                    return;
+                }
+
+                console.log(`PIECE HAS BEEN CLICKED`);
+                currentBoard[row][col] = null;
+                currentBoard[row + 1][col] = currentPiece; 
+
+
+                renderPosition(currentBoard, nodeListOfSquares);
+                console.log(currentBoard);
+            });
+        }
+    }
 
 }
 
@@ -90,6 +123,4 @@ const nodeListOfSquares = createChessBoard();
 const currentBoard = boardDataStructure();
 renderPosition(currentBoard, nodeListOfSquares);
 console.log(currentBoard);
-// movePiece(currentBoard, 1, 0);
-// console.log(currentBoard);
-// renderPosition(currentBoard, nodeListOfSquares);
+movePieceTest(currentBoard, nodeListOfSquares);
