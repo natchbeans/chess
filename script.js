@@ -86,6 +86,8 @@ function renderPosition(currentBoard, nodeListOfSquares){
 // }
 
 function movePieceTest(currentBoard, nodeListOfSquares){
+
+
     //Piece is 'clicked' on the DOM, needs to relate to datastructure, add click event to move
     for (let row = 0; row < 8; row++){
         for(let col = 0; col < 8; col ++){
@@ -94,7 +96,7 @@ function movePieceTest(currentBoard, nodeListOfSquares){
             const square = nodeListOfSquares[indexNumber]; //where that index in the DOM actually is
 
 
-            square.addEventListener(`click`, function(){
+            square.addEventListener(`click`, function(p){
                 //Adding this listener to every square
                 //Listener attached to square[9] knows its row 1, col 1, etc.
 
@@ -105,20 +107,34 @@ function movePieceTest(currentBoard, nodeListOfSquares){
                     return;
                 }
 
+                if (currentPiece[0] !== currentPlayer){
+                    return;
+                }
+                
+
+                
+
                 console.log(`PIECE HAS BEEN CLICKED`);
                 currentBoard[row][col] = null;
-                currentBoard[row + 1][col] = currentPiece; 
+                currentBoard[row - 1][col] = currentPiece; 
 
-
+                if (currentPlayer === `w`){
+                    currentPlayer = `b`;
+                }
+                else{
+                    currentPlayer = `w`;
+                }
+                
                 renderPosition(currentBoard, nodeListOfSquares);
                 console.log(currentBoard);
+
             });
         }
     }
 
 }
 
-
+let currentPlayer = `w`;
 const nodeListOfSquares = createChessBoard();
 const currentBoard = boardDataStructure();
 renderPosition(currentBoard, nodeListOfSquares);
