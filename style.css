@@ -29,6 +29,10 @@ Overflow: hidden is so that the 50x 50x squares do not clip out of the border, i
     
 }
 
+.square.legalMove {
+    border: 2px solid blue;
+}
+
 .square.darkSquare {
     background-color: #b58863;
 }
@@ -36,4 +40,5 @@ Overflow: hidden is so that the 50x 50x squares do not clip out of the border, i
 .square.lightSquare {
     background-color: #f0d9b5;
 }
+
 

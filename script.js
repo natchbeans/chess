@@ -1,3 +1,4 @@
+
 //Creates a BLANK chess board. Uses DOM manipulation to dynamically create div elements.
 function createChessBoard() {
     const chessBoardDiv = document.querySelector('.chessBoard'); //select chess board div
@@ -44,6 +45,53 @@ function boardDataStructure(){
 
 }
 
+//Depending on what piece is clicked, there is going to be available moves I think.
+//For instance a pawn cannot move more than 1 square(or 2 from starting square)
+//But a Rook or Queen can move the length of the board if there is nothing occupying those squares. 
+
+function highlightLegalMoves(currentBoard, row, col){
+    //Returns array of legal moves
+    const legalMovesWhite = [];
+    const legalMovesBlack = [];
+    const pieceColor = currentBoard[row][col][0];
+    //return list of legal moves for pawn
+    if (pieceColor === `w`){
+        if (currentBoard[row - 1][col] === null){
+            legalMovesWhite.push([row - 1, col]); //return coord, if pawn at 5,0 is clicked, and 4,0 is null, it returns 4,0
+        }
+        return legalMovesWhite;
+    }
+    else {
+        if (currentBoard[row + 1][col] === null){
+            legalMovesBlack.push([row + 1, col]);
+        }
+        return legalMovesBlack
+    }
+}
+
+function selectPieceToMove(currentBoard, nodeListOfSquares){
+    for (let row = 0; row < 8; row++){
+        for (let col = 0; col < 8; col++){
+            const indexNumber = (row * 8) + col; //convert row,col to indexNumber in DOM
+            const square = nodeListOfSquares[indexNumber]; //Grab that square in DOM
+
+            square.addEventListener(`click`, function(){
+                //Loop through all nodeList, and remove the legalMove class
+                for (let i = 0; i < nodeListOfSquares.length; i++){
+                    nodeListOfSquares[i].classList.remove(`legalMove`);
+                }
+                
+                //For each square when clicked => display legalMoves
+                console.log(`Piece has been clicked`);
+                highlightLegalMoves(currentBoard, row, col).forEach(coord =>{
+                    const indexNumberOfLegalSquares = (coord[0] * 8) + coord[1];
+                    const squareOfLegalMove = nodeListOfSquares[indexNumberOfLegalSquares];
+                    squareOfLegalMove.classList.add(`legalMove`);
+                });
+            });
+        }
+    }
+}
 
 function renderPosition(currentBoard, nodeListOfSquares){
 
@@ -85,58 +133,13 @@ function renderPosition(currentBoard, nodeListOfSquares){
 
 // }
 
-function movePieceTest(currentBoard, nodeListOfSquares){
 
 
-    //Piece is 'clicked' on the DOM, needs to relate to datastructure, add click event to move
-    for (let row = 0; row < 8; row++){
-        for(let col = 0; col < 8; col ++){
-            //Connects grid to DOM
-            const indexNumber = (row * 8) + col; //gives matching index in DOM to rows and cols
-            const square = nodeListOfSquares[indexNumber]; //where that index in the DOM actually is
 
-
-            square.addEventListener(`click`, function(p){
-                //Adding this listener to every square
-                //Listener attached to square[9] knows its row 1, col 1, etc.
-
-                const currentPiece = currentBoard[row][col];
-
-                if (currentPiece === null){
-                    //When i click again, currentPlace should be null
-                    return;
-                }
-
-                if (currentPiece[0] !== currentPlayer){
-                    return;
-                }
-                
-
-                
-
-                console.log(`PIECE HAS BEEN CLICKED`);
-                currentBoard[row][col] = null;
-                currentBoard[row - 1][col] = currentPiece; 
-
-                if (currentPlayer === `w`){
-                    currentPlayer = `b`;
-                }
-                else{
-                    currentPlayer = `w`;
-                }
-                
-                renderPosition(currentBoard, nodeListOfSquares);
-                console.log(currentBoard);
-
-            });
-        }
-    }
-
-}
 
 let currentPlayer = `w`;
 const nodeListOfSquares = createChessBoard();
 const currentBoard = boardDataStructure();
 renderPosition(currentBoard, nodeListOfSquares);
 console.log(currentBoard);
-movePieceTest(currentBoard, nodeListOfSquares);
+selectPieceToMove(currentBoard, nodeListOfSquares);
