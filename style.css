@@ -4,6 +4,10 @@
 
 body {
     background-color: #161512;
+    display:flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* I give the wrapper rounded edges with border-radius.
@@ -18,7 +22,7 @@ Overflow: hidden is so that the 50x 50x squares do not clip out of the border, i
 }
 
 .chessBoard {
-    display: grid; 
+    display: grid;
     grid-template-columns: repeat(8, 50px);
     grid-template-rows: repeat(8, 50px );
 }
@@ -26,12 +30,10 @@ Overflow: hidden is so that the 50x 50x squares do not clip out of the border, i
 .square {
     height: 50px;
     width: 50px;
-    
+    box-sizing: border-box;
 }
 
-.square.legalMove {
-    border: 2px solid blue;
-}
+
 
 .square.darkSquare {
     background-color: #b58863;
@@ -41,4 +43,15 @@ Overflow: hidden is so that the 50x 50x squares do not clip out of the border, i
     background-color: #f0d9b5;
 }
 
+.square.legalMoveCircle{
+    /* CSS gotten from inspect tool on LICHESS site, copied this line of code for this circle */
+    background-image:radial-gradient(rgba(20, 85, 30, 0.5) 19%, rgba(0, 0, 0, 0) 20%);
+}
 
+.square.lightSquare.move-dest:hover {
+    background-color:rgba(90, 86, 86, 0.3);
+}
+
+.square.darkSquare.move-dest:hover {
+    background-color:rgba(90, 86, 86, 0.3);
+}

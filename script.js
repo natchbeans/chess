@@ -59,17 +59,23 @@ function highlightLegalMoves(currentBoard, row, col){
         if (currentBoard[row - 1][col] === null){
             legalMovesWhite.push([row - 1, col]); //return coord, if pawn at 5,0 is clicked, and 4,0 is null, it returns 4,0
         }
+        console.log(`White legal moves are: ${legalMovesWhite}`);
         return legalMovesWhite;
     }
     else {
         if (currentBoard[row + 1][col] === null){
             legalMovesBlack.push([row + 1, col]);
         }
+        console.log(`Black legal moves are: ${legalMovesBlack}`);
         return legalMovesBlack
     }
 }
 
 function selectPieceToMove(currentBoard, nodeListOfSquares){
+    //Lichess: Piece is clicked -> current square is darkened, legal moves are given small dark circle.
+    //When mouse hovers over legal move (hover event?) adds darkened effect, removes circle.
+    //Piece is moved when legal square clicked. Yellow effect on square that was piece moved from and to.
+
     for (let row = 0; row < 8; row++){
         for (let col = 0; col < 8; col++){
             const indexNumber = (row * 8) + col; //convert row,col to indexNumber in DOM
@@ -78,19 +84,29 @@ function selectPieceToMove(currentBoard, nodeListOfSquares){
             square.addEventListener(`click`, function(){
                 //Loop through all nodeList, and remove the legalMove class
                 for (let i = 0; i < nodeListOfSquares.length; i++){
-                    nodeListOfSquares[i].classList.remove(`legalMove`);
+                    nodeListOfSquares[i].classList.remove(`legalMoveCircle`);
+                    nodeListOfSquares[i].classList.remove(`move-dest`);
                 }
                 
                 //For each square when clicked => display legalMoves
                 console.log(`Piece has been clicked`);
-                highlightLegalMoves(currentBoard, row, col).forEach(coord =>{
+                highlightLegalMoves(currentBoard, row, col).forEach(coord => {
                     const indexNumberOfLegalSquares = (coord[0] * 8) + coord[1];
                     const squareOfLegalMove = nodeListOfSquares[indexNumberOfLegalSquares];
-                    squareOfLegalMove.classList.add(`legalMove`);
+                    squareOfLegalMove.classList.add(`legalMoveCircle`);
+                    squareOfLegalMove.classList.add(`move-dest`);
                 });
+
+
+                //On Lichess, piece is clicked -> ONLY while piece is clicked, can you hover over legal moves
+
             });
         }
     }
+}
+
+function movePiece (currentBoard, nodeListOfSquares){
+    //When legal move is clicked, move piece, need to figure out hover.
 }
 
 function renderPosition(currentBoard, nodeListOfSquares){
