@@ -49,10 +49,14 @@ function boardDataStructure(){
 //For instance a pawn cannot move more than 1 square(or 2 from starting square)
 //But a Rook or Queen can move the length of the board if there is nothing occupying those squares. 
 
-function highlightLegalMoves(currentBoard, row, col){
+function returnLegalMoves(currentBoard, row, col){
     //Returns array of legal moves
     const legalMovesWhite = [];
     const legalMovesBlack = [];
+    const piece = currentBoard[row][col];
+
+    if (!piece) return [];
+
     const pieceColor = currentBoard[row][col][0];
     //return list of legal moves for pawn
     if (pieceColor === `w`){
@@ -71,42 +75,67 @@ function highlightLegalMoves(currentBoard, row, col){
     }
 }
 
-function selectPieceToMove(currentBoard, nodeListOfSquares){
-    //Lichess: Piece is clicked -> current square is darkened, legal moves are given small dark circle.
-    //When mouse hovers over legal move (hover event?) adds darkened effect, removes circle.
-    //Piece is moved when legal square clicked. Yellow effect on square that was piece moved from and to.
+function addClickEventToAllSquares(currentBoard, nodeListOfSquares){
+    //Add ONE click event to all squares
+    for(let i = 0; i < 8; i++){
+        for(let j = 0; j < 8; j++){
+            const indexNumber = (i * 8) + j; //converts (row, col) to DOM number
+            const squareInDOM = nodeListOfSquares[indexNumber];
+            const row = i;
+            const col = j;
 
-    for (let row = 0; row < 8; row++){
-        for (let col = 0; col < 8; col++){
-            const indexNumber = (row * 8) + col; //convert row,col to indexNumber in DOM
-            const square = nodeListOfSquares[indexNumber]; //Grab that square in DOM
+            squareInDOM.addEventListener(`click`, () => {
+                //Do something
 
-            square.addEventListener(`click`, function(){
-                //Loop through all nodeList, and remove the legalMove class
-                for (let i = 0; i < nodeListOfSquares.length; i++){
-                    nodeListOfSquares[i].classList.remove(`legalMoveCircle`);
-                    nodeListOfSquares[i].classList.remove(`move-dest`);
-                }
-                
-                //For each square when clicked => display legalMoves
-                console.log(`Piece has been clicked`);
-                highlightLegalMoves(currentBoard, row, col).forEach(coord => {
-                    const indexNumberOfLegalSquares = (coord[0] * 8) + coord[1];
-                    const squareOfLegalMove = nodeListOfSquares[indexNumberOfLegalSquares];
-                    squareOfLegalMove.classList.add(`legalMoveCircle`);
-                    squareOfLegalMove.classList.add(`move-dest`);
-                });
-
-
-                //On Lichess, piece is clicked -> ONLY while piece is clicked, can you hover over legal moves
-
+                handleClickedSquare(currentBoard, nodeListOfSquares, row, col);
             });
         }
     }
 }
 
-function movePiece (currentBoard, nodeListOfSquares){
-    //When legal move is clicked, move piece, need to figure out hover.
+function handleClickedSquare(currentBoard, nodeListOfSquares, row, col){
+    //handle specific square being clicked
+    const selectedPiece = currentBoard[row][col];
+    const indexNumber = (row * 8) + col;
+    const squareInDOM = nodeListOfSquares[indexNumber];
+
+    if (squareInDOM.classList.contains(`move-dest`)){
+        for (let k = 0; k < nodeListOfSquares.length; k++){
+            nodeListOfSquares[k].classList.remove(`legalMoveCircle`);
+            nodeListOfSquares[k].classList.remove(`move-dest`);
+        }
+
+        movePiece(currentBoard, nodeListOfSquares, selectedSquare.row, selectedSquare.col, row, col);
+        selectedSquare = null;
+        return;
+    }
+
+    if (selectedPiece){
+        console.log(`piece is clicked`);
+
+        for (let k = 0; k < nodeListOfSquares.length; k++){
+            nodeListOfSquares[k].classList.remove(`legalMoveCircle`);
+            nodeListOfSquares[k].classList.remove(`move-dest`);
+        }
+
+        selectedSquare = {row: row, col: col};
+        returnLegalMoves(currentBoard, row, col).forEach(coord => {
+            const indexNumberOfLegalSquares = (coord[0] * 8) + coord[1];
+            const squareOfLegalMove = nodeListOfSquares[indexNumberOfLegalSquares];
+            squareOfLegalMove.classList.add(`legalMoveCircle`);
+            squareOfLegalMove.classList.add(`move-dest`);
+        });
+    }
+}
+
+function movePiece(currentBoard, nodeListOfSquares, fromRow, fromCol, toRow, toCol){
+    //take current piece at [row][col] and move to new coordinate.
+    const currentPiece = currentBoard[fromRow][fromCol];
+    currentBoard[fromRow][fromCol] = null;
+    currentBoard[toRow][toCol] = currentPiece;
+    console.log(`Moved piece`);
+
+    renderPosition(currentBoard, nodeListOfSquares);
 }
 
 function renderPosition(currentBoard, nodeListOfSquares){
@@ -141,21 +170,15 @@ function renderPosition(currentBoard, nodeListOfSquares){
     }
 }
 
-// function movePiece(currentBoard,row, col){
-//     //Given current board, move this piece, needs to loop or something
-//     const currentPiece = currentBoard[row][col];
-//     currentBoard[row][col] = null;
-//     currentBoard[row + 1][col] = currentPiece;
-
-// }
 
 
 
 
 
 let currentPlayer = `w`;
+let selectedSquare = null;
 const nodeListOfSquares = createChessBoard();
 const currentBoard = boardDataStructure();
 renderPosition(currentBoard, nodeListOfSquares);
 console.log(currentBoard);
-selectPieceToMove(currentBoard, nodeListOfSquares);
+addClickEventToAllSquares(currentBoard, nodeListOfSquares);
